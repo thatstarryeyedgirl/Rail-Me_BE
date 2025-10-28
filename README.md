@@ -1,4 +1,4 @@
-# Rail_Me_BE
+# Rail-Me_BE
 
 ## Overview
 **Rail-me** is a train service provider that commutes passengers from the **Abeokuta region** to the **Northern part of Nigeria**.  
@@ -31,4 +31,4 @@ All endpoints are **secured with JWT authentication**, except for **signup** and
 - **Database:** PostgreSQL (for development)
 - **Language:** Python 3.12.10
 - **Environment Management:** `.env`
-# Rail-Me_BE
+
