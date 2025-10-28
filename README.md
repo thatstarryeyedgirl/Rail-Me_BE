@@ -31,3 +31,4 @@ All endpoints are **secured with JWT authentication**, except for **signup** and
 - **Database:** PostgreSQL (for development)
 - **Language:** Python 3.12.10
 - **Environment Management:** `.env`
+# Rail-Me_BE
