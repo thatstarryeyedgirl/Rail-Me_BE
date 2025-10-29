@@ -9,7 +9,7 @@ from services_app.models import Service
 
 class BookTrainSerializer(serializers.ModelSerializer):
     train_name = serializers.ChoiceField(choices=[], write_only=True)
-    service_type = serializers.ChoiceField(choices=[], required=False, write_only=True)
+    service_type = serializers.ChoiceField(choices=[], required=True, write_only=True)
     departure_time = serializers.DateTimeField()
     seats_booked = serializers.IntegerField()
 
