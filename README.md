@@ -36,6 +36,6 @@ All endpoints are **secured with JWT authentication**, except for **signup** and
 The Rail-me API endpoints are fully documented in Postman to make testing and integration easier.
 The collection includes all routes for user authentication, bookings, and admin operations, along with sample requests and responses.
 
-Each request is preconfigured with the correct HTTP method and example data — so you can quickly test how each endpoint works
+Each request is preconfigured with the correct HTTP method and example data — so you can quickly test how each endpoint works.
 **Postman Link:** `https://documenter.getpostman.com/view/48778720/2sB3Wnv1Zy`
 
