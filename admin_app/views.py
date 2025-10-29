@@ -140,7 +140,7 @@ class TrainDeleteView(generics.DestroyAPIView):
 class CommuterListView(generics.ListAPIView):
     queryset = Passenger.objects.all()
     serializer_class = CommuterSerializer
-    authentication_classes = [AdminJWTAuthentication]  # restrict to admin token
+    authentication_classes = [AdminJWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     
 
