@@ -16,21 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.http import JsonResponse
-
-def api_root(request):
-    return JsonResponse({
-        'message': 'Rail-me API is running',
-        'endpoints': {
-            'accounts': '/accounts/',
-            'bookings': '/bookings/',
-            'services': '/services/',
-            'admins': '/admins/'
-        }
-    })
 
 urlpatterns = [
-    path('', api_root, name='api_root'),
     path('admin/', admin.site.urls), 
     path('accounts/', include('accounts_app.urls')),
     path('bookings/', include('bookings_app.urls')),
