@@ -29,11 +29,11 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         errors = {}
         phone = attrs.get('phone_number')
-        
-        if not phone.isdigit() or len(phone) < 10:
-            errors['phone_number'] = "Phone number must be at least 10 digits."
-        
         password = attrs.get('password')
+         
+        if not phone.isdigit() or len(phone) < 11:
+            errors['phone_number'] = "Phone number must be at least 10 digits."
+       
         if len(password) < 12:
             errors['password'] = "Password must be at least 12 characters long."
         if errors:
@@ -140,7 +140,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         token.set_exp(lifetime=timedelta(minutes=15))  # token expires in 15 minutes
         # Encode user ID
         uidb64 = urlsafe_base64_encode(smart_bytes(admin.id))
-        reset_link = f"http://localhost:8000/admins/reset-password/{uidb64}/{token}/"
+        reset_link = f"https://rail-me-be.onrender.com/admins/reset-password/{uidb64}/{token}/"
         
         send_mail(
             subject="Password Reset Request",

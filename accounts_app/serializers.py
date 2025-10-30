@@ -29,11 +29,11 @@ class PassengerRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         errors = {}
         phone = attrs.get('phone_number')
+        password = attrs.get('password')
         
-        if not phone.isdigit() or len(phone) < 10:
+        if not phone.isdigit() or len(phone) < 11:
             errors['phone_number'] = "Phone number must be at least 10 digits."
         
-        password = attrs.get('password')
         if len(password) < 12:
             errors['password'] = "Password must be at least 12 characters long."
         if errors:
@@ -144,7 +144,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         # Encode user ID
         uidb64 = urlsafe_base64_encode(smart_bytes(user.id)) # encodes the user's ID safely for use in a URL
 
-        reset_link = f"http://localhost:8000/accounts/reset-password/{uidb64}/{jwt_token}/"
+        reset_link = f"https://rail-me-be.onrender.com/accounts/reset-password/{uidb64}/{jwt_token}/"
 
         send_mail(
             subject="Password Reset Request",
