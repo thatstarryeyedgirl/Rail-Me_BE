@@ -28,7 +28,12 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
         errors = {}
+        email = attrs.get('email')
         phone = attrs.get('phone_number')
+        
+        # Check if email already exists
+        if Admin.objects.filter(email=email).exists():
+            errors['email'] = "An admin with this email already exists."
          
         if not phone.isdigit() or len(phone) < 11:
             errors['phone_number'] = "Phone number must be at least 11 digits."
