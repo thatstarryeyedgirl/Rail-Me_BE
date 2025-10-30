@@ -29,7 +29,6 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         errors = {}
         phone = attrs.get('phone_number')
-        
          
         if not phone.isdigit() or len(phone) < 11:
             errors['phone_number'] = "Phone number must be at least 11 digits."
