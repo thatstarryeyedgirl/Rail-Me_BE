@@ -42,13 +42,16 @@ class PassengerRegistrationSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data): # validated_data is the data that has been validated by the serializer
-        passenger = Passenger.objects.create_user( # creates a new user using the create_user method from PassengerManager
-            email=validated_data['email'],
-            phone_number=validated_data['phone_number'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            password=validated_data['password']
-        )
+        try:
+            passenger = Passenger.objects.create_user( # creates a new user using the create_user method from PassengerManager
+                email=validated_data['email'],
+                phone_number=validated_data['phone_number'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password']
+            )
+        except Exception:
+            raise serializers.ValidationError({"email": "An admin with this email already exists."})
         # Generate OTP for verification
         otp_code = generate_otp(validated_data['email'], 'REGISTER') # this line generates an OTP for the email provided during registration
         user = Passenger.objects.get(email=validated_data['email'])
