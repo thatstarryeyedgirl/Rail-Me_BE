@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: rail-me-api
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn railmebookingsystem.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: DB_NAME
+        fromDatabase:
+          name: rail-me-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: rail-me-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: rail-me-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: rail-me-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: rail-me-db
+          property: port
+
+databases:
+  - name: rail-me-db
+    databaseName: railme_db
+    user: railme_user
