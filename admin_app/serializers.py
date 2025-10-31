@@ -155,15 +155,17 @@ class ForgotPasswordSerializer(serializers.Serializer):
         # Encode user ID
         uidb64 = urlsafe_base64_encode(smart_bytes(admin.id))
         reset_link = f"https://rail-me-be.onrender.com/admins/reset-password/{uidb64}/{token}/"
-        
-        send_mail(
-            subject="Password Reset Request",
-            message=f"Hello {admin.first_name},\n\nUse the link below to reset your password. "
+        try:
+            send_mail(
+                subject="Password Reset Request",
+                message=f"Hello {admin.first_name},\n\nUse the link below to reset your password. "
                     f"This link will expire in 15 minutes.\n\n{reset_link}\n\n"
                     "If you didn’t request this, please ignore this email.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
             )
+        except SMTPRecipientsRefused:
+            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
         return {"message": "Password reset link sent to your email"}
 
 
