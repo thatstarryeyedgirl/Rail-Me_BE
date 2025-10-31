@@ -55,13 +55,16 @@ class PassengerRegistrationSerializer(serializers.ModelSerializer):
         # Generate OTP for verification
         otp_code = generate_otp(validated_data['email'], 'REGISTER') # this line generates an OTP for the email provided during registration
         user = Passenger.objects.get(email=validated_data['email'])
-        send_mail(
+        try:
+            send_mail(
             subject='Rail-me Email Verification OTP',
             message=f"Dear {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me Team.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[validated_data['email']],
             fail_silently=False,
         )
+        except SMTPRecipientsRefused:
+            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
         return passenger
 
 

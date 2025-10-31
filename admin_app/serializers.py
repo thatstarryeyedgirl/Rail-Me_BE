@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import check_password
 import os
 from accounts_app.models import Passenger
+from smtplib import SMTPRecipientsRefused
 
 
 
@@ -47,6 +48,10 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data): # validated_data is the data that has been validated by the serializer
         try:
+            admin = Admin.objects.get(email=validated_data['email'])
+            if admin:
+                raise serializers.ValidationError({"email": "An admin with this email already exists."})
+        except Admin.DoesNotExist:
             admin = Admin.objects.create_user( # creates a new user using the create_user method from PassengerManager
                 email=validated_data['email'],
                 phone_number=validated_data['phone_number'],
@@ -54,19 +59,20 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
                 last_name=validated_data['last_name'],
                 password=validated_data['password']
             )
-        except Exception:
-            raise serializers.ValidationError({"email": "An admin with this email already exists."})
         # Generate OTP for verification
         otp_code = generate_otp(validated_data['email'], 'REGISTER') # this line generates an OTP for the email provided during registration
         # otp_code_phone = generate_otp(validated_data['phone_number'], 'REGISTER')
         user = Admin.objects.get(email=validated_data['email'])
-        send_mail(
+        try:
+            send_mail(
             subject='Rail-me Email Verification OTP',
             message=f"Dear {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[validated_data['email']],
             fail_silently=False,
         )
+        except SMTPRecipientsRefused:
+            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
         return admin
 
 
