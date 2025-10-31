@@ -65,14 +65,14 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
         user = Admin.objects.get(email=validated_data['email'])
         try:
             send_mail(
-            subject='Rail-me Email Verification OTP',
-            message=f"Dear Admin {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[validated_data['email']],
-            fail_silently=False,
-        )
-        except SMTPRecipientsRefused:
-            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
+                subject='Rail-me Email Verification OTP',
+                message=f"Dear Admin {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[validated_data['email']],
+                fail_silently=False,
+            )
+        except Exception:
+            raise serializers.ValidationError({"error": "Failed to send verification email. Please try again."})
         return admin
 
 
