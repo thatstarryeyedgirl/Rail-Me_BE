@@ -51,7 +51,7 @@ class PassengerRegistrationSerializer(serializers.ModelSerializer):
                 password=validated_data['password']
             )
         except Exception:
-            raise serializers.ValidationError({"email": "An admin with this email already exists."})
+            raise serializers.ValidationError({"email": "A passenger with this email already exists."})
         # Generate OTP for verification
         otp_code = generate_otp(validated_data['email'], 'REGISTER') # this line generates an OTP for the email provided during registration
         user = Passenger.objects.get(email=validated_data['email'])

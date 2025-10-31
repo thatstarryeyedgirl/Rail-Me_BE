@@ -66,7 +66,7 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
         try:
             send_mail(
             subject='Rail-me Email Verification OTP',
-            message=f"Dear {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me.",
+            message=f"Dear Admin {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[validated_data['email']],
             fail_silently=False,
