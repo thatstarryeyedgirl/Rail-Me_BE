@@ -57,14 +57,16 @@ class PassengerRegistrationSerializer(serializers.ModelSerializer):
         user = Passenger.objects.get(email=validated_data['email'])
         try:
             send_mail(
-            subject='Rail-me Email Verification OTP',
-            message=f"Dear {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me Team.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[validated_data['email']],
-            fail_silently=False,
-        )
-        except SMTPRecipientsRefused:
-            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
+                subject='Rail-me Email Verification OTP',
+                message=f"Dear {user.first_name},\n\nWelcome on-board Rail-Me.\n\nHope you enjoy the experience.\n\nYour OTP is {otp_code}. It expires in 5 minutes.\n\nBest Regards,\nRail-me Team.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[validated_data['email']],
+                fail_silently=False,
+            )
+        except Exception as e:
+            # Delete the created passenger if email fails
+            passenger.delete()
+            raise serializers.ValidationError({"error": f"Failed to send verification email: {str(e)}"})
         return passenger
 
 
@@ -83,20 +85,18 @@ class OTPRequestSerializer(serializers.Serializer):
 
             try:
                 send_mail(
-                subject="Rail-me Email Verification Code",
-                message=(
-                    f"Dear {user.first_name},\n\n"
-                    f"Your OTP is {otp_code}. It expires in 5 minutes.\n\n"
-                    "Thank you for choosing Rail-me"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[target],
-                fail_silently=False,
-            )
-            except SMTPRecipientsRefused:
-                raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
-            except (BadHeaderError, SMTPException) as i:
-                raise serializers.ValidationError({"error": f"Email sending failed: {str(i)}"})
+                    subject="Rail-me Email Verification Code",
+                    message=(
+                        f"Dear {user.first_name},\n\n"
+                        f"Your OTP is {otp_code}. It expires in 5 minutes.\n\n"
+                        "Thank you for choosing Rail-me"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[target],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                raise serializers.ValidationError({"error": f"Failed to send OTP email: {str(e)}"})
 
             return {"message": "OTP sent successfully via email."}
 
@@ -160,8 +160,8 @@ class ForgotPasswordSerializer(serializers.Serializer):
                 from_email=settings.DEFAULT_FROM_EMAIL, # who's sending the email
                 recipient_list=[email], # who's receiving the email
         )
-        except SMTPRecipientsRefused:
-            raise serializers.ValidationError({"error": "Recipient email temporarily unavailable. Try again later."})
+        except Exception as e:
+            raise serializers.ValidationError({"error": f"Failed to send password reset email: {str(e)}"})
         return Response({"message": "Password reset link sent to your email"}, status=status.HTTP_200_OK)
 
 

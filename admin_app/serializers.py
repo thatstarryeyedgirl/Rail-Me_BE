@@ -47,22 +47,17 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data): # validated_data is the data that has been validated by the serializer
-        try:
-            admin = Admin.objects.get(email=validated_data['email'])
-            if admin:
-                raise serializers.ValidationError({"email": "An admin with this email already exists."})
-        except Admin.DoesNotExist:
-            admin = Admin.objects.create_user( # creates a new user using the create_user method from PassengerManager
-                email=validated_data['email'],
-                phone_number=validated_data['phone_number'],
-                first_name=validated_data['first_name'],
-                last_name=validated_data['last_name'],
-                password=validated_data['password']
-            )
+        admin = Admin.objects.create_user( # creates a new user using the create_user method from PassengerManager
+            email=validated_data['email'],
+            phone_number=validated_data['phone_number'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            password=validated_data['password']
+        )
         # Generate OTP for verification
         otp_code = generate_otp(validated_data['email'], 'REGISTER') # this line generates an OTP for the email provided during registration
         # otp_code_phone = generate_otp(validated_data['phone_number'], 'REGISTER')
-        user = Admin.objects.get(email=validated_data['email'])
+        user = admin
         try:
             send_mail(
                 subject='Rail-me Email Verification OTP',
@@ -71,8 +66,10 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
                 recipient_list=[validated_data['email']],
                 fail_silently=False,
             )
-        except Exception:
-            raise serializers.ValidationError({"error": "Failed to send verification email. Please try again."})
+        except Exception as e:
+            # Delete the created admin if email fails
+            admin.delete()
+            raise serializers.ValidationError({"error": f"Failed to send verification email: {str(e)}"})
         return admin
 
 
