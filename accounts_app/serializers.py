@@ -11,8 +11,7 @@ from django.utils.encoding import smart_bytes, force_str
 from datetime import timedelta
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail, BadHeaderError
-from smtplib import SMTPRecipientsRefused, SMTPException
+from django.core.mail import send_mail
 
 
 class PassengerRegistrationSerializer(serializers.ModelSerializer):
